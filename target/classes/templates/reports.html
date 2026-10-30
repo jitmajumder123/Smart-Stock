@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Reports · SmartStock</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body><div class="shell">
+<aside class="sidebar"><div class="brand"><span class="brand-icon">▦</span> SmartStock</div><nav>
+<a href="/">▦ &nbsp; Dashboard</a><a href="/products">▣ &nbsp; Products</a><a href="/inventory">▤ &nbsp; Inventory</a><a href="/orders">▧ &nbsp; Orders</a><a sec:authorize="hasAnyRole('ADMIN','MANAGER')" href="/suppliers">♧ &nbsp; Suppliers</a><a class="active" href="/reports">▥ &nbsp; Reports</a><a sec:authorize="hasRole('ADMIN')" href="/settings">⚙ &nbsp; Settings</a>
+</nav><form th:action="@{/logout}" method="post" class="logout"><button type="submit">↪ Sign out</button></form></aside>
+<main class="main">
+<header class="topbar"><div><div class="eyebrow">ANALYTICS</div><h1>Reports</h1><p class="muted">Monthly product orders, completed revenue, and current inventory value.</p></div></header>
+<div class="stats">
+<div class="stat"><div class="stat-top">Completed revenue · month</div><strong th:text="${monthRevenue}">$0.00</strong><small>Completed orders only</small></div>
+<div class="stat"><div class="stat-top">Orders · month</div><strong th:text="${monthOrderCount}">0</strong><small>Cancelled orders excluded</small></div>
+<div class="stat"><div class="stat-top">Current inventory value</div><strong th:text="${stockValue}">$0.00</strong><small>Unit price × units on hand</small></div>
+<div class="stat"><div class="stat-top">Suppliers / movements</div><strong th:text="${supplierCount + ' / ' + movementCount}">0 / 0</strong><small>All time</small></div>
+</div>
+<section class="panel">
+<form class="search-row" method="get" th:action="@{/reports}">
+<label class="inline-label">Month<select name="month"><option th:each="option : ${monthOptions}" th:value="${option.number}" th:selected="${option.number == selectedMonth}" th:text="${option.name}">Month</option></select></label>
+<label class="inline-label">Year<input type="number" name="year" min="2000" max="2100" th:value="${selectedYear}" required></label><button class="btn" type="submit">View report</button>
+</form>
+<div class="panel-head"><div><h2 th:text="${'Product orders · ' + monthLabel}">Product orders</h2><p class="muted">Units and number of non-cancelled orders containing each product.</p></div></div>
+<div class="table-wrap"><table><thead><tr><th>SKU</th><th>PRODUCT</th><th>UNITS ORDERED</th><th>ORDER COUNT</th><th>COMPLETED REVENUE</th></tr></thead><tbody>
+<tr th:each="sales : ${productSales}"><td class="sku" th:text="${sales.sku}">SKU</td><td class="product-name" th:text="${sales.name}">Product</td><td th:text="${sales.quantity}">0</td><td th:text="${sales.orderCount}">0</td><td th:text="${sales.revenue}">$0.00</td></tr>
+<tr th:if="${#lists.isEmpty(productSales)}"><td colspan="5" class="empty">No product-linked orders for this month. Create orders from the Orders page and select a product.</td></tr>
+</tbody></table></div></section>
+<section class="panel"><div class="panel-head"><div><h2>Inventory valuation</h2><p class="muted">Current stock by active product</p></div></div><div class="table-wrap"><table><thead><tr><th>SKU</th><th>PRODUCT</th><th>CATEGORY</th><th>UNITS ON HAND</th><th>UNIT PRICE</th><th>STOCK VALUE</th></tr></thead><tbody>
+<tr th:each="row : ${inventoryRows}"><td class="sku" th:text="${row.sku}">SKU</td><td class="product-name" th:text="${row.name}">Product</td><td th:text="${row.category}">Category</td><td th:text="${row.stock}">0</td><td th:text="${row.unitPrice}">$0.00</td><td th:text="${row.stockValue}">$0.00</td></tr>
+<tr th:if="${#lists.isEmpty(inventoryRows)}"><td colspan="6" class="empty">No active products to value. Add products from the Products page.</td></tr>
+</tbody></table></div></section>
+</main></div></body></html>

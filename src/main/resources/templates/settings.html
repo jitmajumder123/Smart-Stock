@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Inventory Settings · SmartStock</title><link rel="stylesheet" th:href="@{/css/app.css}"></head>
+<body><div class="shell">
+<aside class="sidebar"><div class="brand"><span class="brand-icon">▦</span> SmartStock</div><nav>
+<a href="/">▦ &nbsp; Dashboard</a><a href="/products">▣ &nbsp; Products</a><a href="/inventory">▤ &nbsp; Inventory</a><a href="/orders">▧ &nbsp; Orders</a><a sec:authorize="hasAnyRole('ADMIN','MANAGER')" href="/suppliers">♧ &nbsp; Suppliers</a><a href="/reports">▥ &nbsp; Reports</a><a class="active" href="/settings">⚙ &nbsp; Settings</a>
+</nav><form th:action="@{/logout}" method="post" class="logout"><button type="submit">↪ Sign out</button></form></aside>
+<main class="main"><header class="topbar"><div><div class="eyebrow">ADMINISTRATION</div><h1>Inventory settings</h1><p class="muted">Stock monitoring and order reservation rules for this workspace.</p></div></header>
+<div class="stats">
+<div class="stat"><div class="stat-top">Active products</div><strong th:text="${activeProductCount}">0</strong><small><a class="text-link" href="/products">Manage catalogue →</a></small></div>
+<div class="stat"><div class="stat-top">Low stock alerts</div><strong th:text="${lowStockCount}">0</strong><small>At or below each product reorder point</small></div>
+<div class="stat"><div class="stat-top">Units on hand</div><strong th:text="${#numbers.formatInteger(totalStock,1,'COMMA')}">0</strong><small><a class="text-link" href="/inventory">Open inventory →</a></small></div>
+<div class="stat"><div class="stat-top">Supplier records</div><strong th:text="${supplierCount}">0</strong><small>Available to managers and admins</small></div>
+</div>
+<section class="panel form-panel"><h2>Stock monitoring</h2><p class="muted">Each product has its own reorder point. The dashboard flags products when available stock reaches or falls below that value.</p><div class="settings-row"><b>Update reorder points</b><span>Edit a product in Products and set its reorder point.</span></div><div class="settings-row"><b>Record stock received or removed</b><span>Use Inventory → Adjust stock. Each adjustment is written to movement history.</span></div><div class="settings-row"><b>Order reservation policy</b><span>Pending, Processing, and Completed orders reserve stock. Cancelling or deleting an order returns its reserved units.</span></div><div class="settings-row"><b>Revenue reporting</b><span>Only Completed orders count as revenue. Reports can be filtered by month and year.</span></div><div class="settings-row"><b>Audit history</b><span>Review recent manual adjustments and order movements from Inventory.</span></div><div class="form-actions"><a class="btn btn-light" href="/inventory">View inventory</a><a class="btn" href="/products">Manage products</a></div></section>
+</main></div></body></html>
